@@ -1,0 +1,18 @@
+{
+  "name": "vsowork",
+  "main": "./lib/vsowork",
+  "version": "0.1.0",
+  "description": "Search for VSO Work Items",
+  "keywords": [],
+  "repository": "https://github.com/jarig/atom-vsowork",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+    "atom-space-pen-views": "*",
+    "lodash": "^3.10.1",
+    "space-pen": "*",
+    "jquery": "*"
+  }
+}
