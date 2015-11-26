@@ -4,9 +4,15 @@ Package to search VSO Work Items in Atom
 
 # Usage
 
-1. In package settings Set up VSO REST url
-URL should be something like: https://[username].visualstudio.com/DefaultCollection/[project]/_apis
+1. In package settings Set up VSO Collection url
+URL should be something like: https://[username].visualstudio.com/DefaultCollection
 
-2. Press cmd-shift-j to open search box
+2. Set project name, ex: MyProject
 
-3. Type to make searches
+3. Set query path, ex: My Queries/Assigned to me
+
+  NOTE: You'll need create one in VSO and it should be of **Flat** type.
+
+4. Press cmd-shift-v (or ctrl-shift-v) to open search box
+
+5. Type to filter items by title

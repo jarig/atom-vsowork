@@ -1,7 +1,21 @@
 @import "ui-variables";
 
 .vsowork {
-  .item_id {
-    color: orange;
+  .item {
+    padding-left: 10px;
+    border-left-style: solid;
+    border-left-width: thick;
+    &.Bug {
+      border-left-color: red;
+    }
+    &.EnablingSpecification {
+      border-left-color: #F2CB1D;
+    }
+    &.Epic {
+      border-left-color: #009CCC;
+    }
+    .item_id {
+      color: orange;
+    }
   }
 }

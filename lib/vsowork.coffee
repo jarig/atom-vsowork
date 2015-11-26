@@ -13,7 +13,7 @@ module.exports =
       default: ''
     vsoQueryPath:
       type: 'string'
-      default: 'Assigned to me'
+      default: 'My Queries/Assigned to me'
       title: 'VSO Work Item Query Path'
       description: 'Get it using rest: '
     vsoUsername:

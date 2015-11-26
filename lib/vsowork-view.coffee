@@ -18,10 +18,12 @@ module.exports = class VsoWorkViewSelectListView extends SelectListView
     else "#{item['System.State']}"
 
     "<li class='vsowork two-lines'>
-      <div class='primary-line'>#{$('<div/>').text(item['System.Title']).html()}</div>
-      <div class='secondary-line'>
-        <span class='item_id'>\##{item['System.Id']}</span>
-        <span class='pull-right key-binding'>#{status}</span>
+      <div class='item #{item['System.WorkItemType'].replace(' ', '')}'>
+        <div class='primary-line'>#{$('<div/>').text(item['System.Title']).html()}</div>
+        <div class='secondary-line'>
+          <span class='item_id'>\##{item['System.Id']}</span>
+          <span class='pull-right key-binding'>#{status}</span>
+        </div>
       </div>
     </li>"
 
@@ -84,7 +86,7 @@ module.exports = class VsoWorkViewSelectListView extends SelectListView
             wItem.id
           # make 2nd hop query
           $.ajax
-            url: "#{@vsoCollectionUrl}/_apis/wit/WorkItems?ids=#{issuesIds.join(',')}&fields=System.Id,System.Title,System.State,System.AssignedTo&api-version=1.0"
+            url: "#{@vsoCollectionUrl}/_apis/wit/WorkItems?ids=#{issuesIds.join(',')}&fields=System.Id,System.WorkItemType,System.Title,System.State,System.AssignedTo&api-version=1.0"
             beforeSend: (xhr) ->
               xhr.withCredentials = true
               xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
