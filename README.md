@@ -1,6 +1,6 @@
 # VSO Work Item
 
-Package to search VSO Work Items in Atom
+Package to search for Visual Studio Online Work Items in Atom
 
 ![Demo](https://raw.githubusercontent.com/jarig/atom-vsowork/master/demo/vsowork-demo.gif)
 
@@ -18,3 +18,5 @@ URL should be something like: https://[username].visualstudio.com/DefaultCollect
 4. Press cmd-shift-v (or ctrl-shift-v) to open search box
 
 5. Type to filter items by title
+
+6. Select an item and its ID will be copied to the clipboard
