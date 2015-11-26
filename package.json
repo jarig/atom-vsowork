@@ -1,7 +1,7 @@
 {
   "name": "vsowork",
   "main": "./lib/vsowork",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Search for VSO Work Items",
   "keywords": [],
   "repository": "https://github.com/jarig/atom-vsowork",
