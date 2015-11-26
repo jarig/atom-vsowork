@@ -2,6 +2,8 @@
 
 Package to search VSO Work Items in Atom
 
+![Demo](https://raw.githubusercontent.com/jarig/atom-vsowork/master/demo/vsowork-demo.gif)
+
 # Usage
 
 1. In package settings Set up VSO Collection url

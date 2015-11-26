@@ -8,7 +8,6 @@ atom.themes.requireStylesheet(require.resolve('../styles/vsowork.less'))
 module.exports = class VsoWorkViewSelectListView extends SelectListView
   initialize: ->
     super
-    @addClass('overlay from-top')
     @maxItems = 10
     @executeVSOQuery()
 
