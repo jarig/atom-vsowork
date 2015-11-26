@@ -3,83 +3,101 @@ shell = require 'shell'
 _ = require 'lodash'
 $ = require 'jquery'
 
+atom.themes.requireStylesheet(require.resolve('../styles/vsowork.less'))
+
 module.exports = class VsoWorkViewSelectListView extends SelectListView
   initialize: ->
     super
-    # Initialize with dummy data to avoid "Loading icon" from appearing
-    @setItems("")
     @addClass('overlay from-top')
+    @maxItems = 10
+    @executeVSOQuery()
 
   viewForItem: (item) ->
-    status = if item.fields['System.AssignedTo'] then \
-    "#{item.fields['System.State']} - #{item.fields['System.AssignedTo']}" \
-    else "#{item.status}"
+    status = if item['System.AssignedTo'] then \
+    "#{item['System.State']} - #{item['System.AssignedTo'].replace(/\s<.+/g, '')}" \
+    else "#{item['System.State']}"
 
-    "<li class='two-lines'>
-      <div class='primary-line'>#{item.fields['System.Title']}</div>
-      <div class='secondary-line'>\##{item.fields['System.Id']}
+    "<li class='vsowork two-lines'>
+      <div class='primary-line'>#{$('<div/>').text(item['System.Title']).html()}</div>
+      <div class='secondary-line'>
+        <span class='item_id'>\##{item['System.Id']}</span>
         <span class='pull-right key-binding'>#{status}</span>
       </div>
     </li>"
 
   confirmed: (item) ->
-    shell.openExternal(item.url)
+    atom.clipboard.write("\##{item['System.Id']}", item)
+    atom.notifications.addInfo("Item #{}#{item['System.Id']} copied to the clipboard", \
+                               {'.icon': 'person'})
+    @hide()
 
   cancelled: ->
     @hide()
 
+  getFilterKey: ->
+    'System.Title'
+
   show: ->
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
+    @setLoading('Running VSO query...')
+    @executeVSOQuery()
     @focusFilterEditor()
-    @vsoRestUrl = atom.config.get("vsowork.vsoApiUrl")
-    @vsoQueryID = atom.config.get("vsowork.vsoQueryID")
-    @vsoUsername = atom.config.get("vsowork.vsoUsername")
-    @vsoToken = atom.config.get("vsowork.vsoToken")
 
   hide: ->
     @panel.hide()
 
-  # overridden populateList that fetches data from VSO
-  # This is not an optimal solution as SelectListView documentation
-  # says that overridden populateList-method should always call super
-  # However, that way it seems hard (impossible?) to get this working
-  populateList: ->
-    q = @getFilterQuery()
-    if q.length < 2 then return
+  executeVSOQuery: ->
+    @vsoCollectionUrl = atom.config.get("vsowork.vsoCollectionUrl")
+    @vsoProjectPath = atom.config.get("vsowork.vsoProjectPath")
+    @vsoQueryPath = atom.config.get("vsowork.vsoQueryPath")
+    @vsoUsername = atom.config.get("vsowork.vsoUsername")
+    @vsoToken = atom.config.get("vsowork.vsoToken")
+    if @vsoQueryId
+      @getVSOItems @vsoQueryId
+    else
+      credentials = btoa("#{@vsoUsername}:#{@vsoToken}")
+      # get query id
+      $.ajax
+        url: "#{@vsoCollectionUrl}/#{@vsoProjectPath}/_apis/wit/queries/#{@vsoQueryPath}?api-version=1.0"
+        beforeSend: (xhr) ->
+          xhr.withCredentials = true
+          xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+          xhr.setRequestHeader("Authorization", "Basic #{credentials}")
+        success: (data) =>
+          @vsoQueryId = data.id
+          @getVSOItems data.id
 
+
+  getVSOItems: (queryId) ->
     # We must query issue id if we are sure that it's in right format
+    credentials = btoa("#{@vsoUsername}:#{@vsoToken}")
     $.ajax
-      url: "#{@vsoRestUrl}/wit/wiql/#{@vsoQueryID}?api-version=1.0"
-      beforeSend: (xhr)->
-        credentials = $.base64.encode("#{@vsoUsername}:#{@vsoToken}")
+      url: "#{@vsoCollectionUrl}/#{@vsoProjectPath}/_apis/wit/wiql/#{queryId}?api-version=1.0"
+      beforeSend: (xhr) ->
         xhr.withCredentials = true
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
-        xhr.setRequestHeader("Authorization", "Basic " + credentials)
+        xhr.setRequestHeader("Authorization", "Basic #{credentials}")
       success: (data) =>
         if data.queryType is 'flat'
-          issuesIds = _.map data.workItemRelations, (wItem) ->
+          issuesIds = _.map data.workItems, (wItem) ->
             wItem.id
-          console.log("Ids: #{issuesIds}")
           # make 2nd hop query
           $.ajax
-            url: "#{@vsoRestUrl}/wit/WorkItems/ids?=#{issuesIds.join(',')}&fields=System.Id,System.Title,System.State,System.AssignedTo&api-version=1.0"
-            beforeSend: (xhr)->
-              credentials = $.base64.encode("#{@vsoUsername}:#{@vsoToken}")
+            url: "#{@vsoCollectionUrl}/_apis/wit/WorkItems?ids=#{issuesIds.join(',')}&fields=System.Id,System.Title,System.State,System.AssignedTo&api-version=1.0"
+            beforeSend: (xhr) ->
               xhr.withCredentials = true
               xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
-              xhr.setRequestHeader("Authorization", "Basic " + credentials)
+              xhr.setRequestHeader("Authorization", "Basic #{credentials}")
             success: (data) =>
-              @list.empty()
-              if data.value > 0
+              list = []
+              if data.count > 0
                 @setError(null)
-                for i in [0...Math.min(issues.length, @maxItems)]
-                  item = data.value[i]
-                  itemView = $(@viewForItem(item))
-                  itemView.data('select-list-item', item)
-                  @list.append(itemView)
-                @selectItemView(@list.find('li:first'))
+                for i in [0...Math.min(data.count, @maxItems)]
+                  item = data.value[i].fields
+                  list.push(item)
+                @setItems(list)
         else
-          atom.notifications.addError("Not supporting tree type queries.")
-      error: () ->
-        atom.notifications.addError("Error executing search.")
+          atom.notifications.addError("VSOWork: Not supporting non-flat type queries: #{data.queryType}")
+      error: ->
+        atom.notifications.addError("VSOWork: Error executing search.")

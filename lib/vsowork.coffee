@@ -3,23 +3,27 @@ VsoWorkView = require './vsowork-view'
 
 module.exports =
   config:
-    vsoApiUrl:
-      type        : 'string'
-      description : 'VSO Work Item REST url'
-      title       : 'test'
-      default     : 'https://[username].visualstudio.com/DefaultCollection/[project]/_apis'
-    vsoQueryID:
-      type        : 'string'
-      default     : ''
-      description : 'VSO Work Item Query ID'
+    vsoCollectionUrl:
+      type: 'string'
+      title: 'VSO Collection URL'
+      default: 'https://[username].visualstudio.com/DefaultCollection'
+    vsoProjectPath:
+      type: 'string'
+      title: 'VSO Project Name'
+      default: ''
+    vsoQueryPath:
+      type: 'string'
+      default: 'Assigned to me'
+      title: 'VSO Work Item Query Path'
+      description: 'Get it using rest: '
     vsoUsername:
-      type        : 'string'
-      default     : ''
-      description : 'VSO Username to Authenticate with'
+      type: 'string'
+      default: ''
+      description: 'VSO Username to Authenticate with'
     vsoToken:
-      type        : 'string'
-      default     : ''
-      description : 'VSO Token/Password'
+      type: 'string'
+      default: ''
+      description: 'VSO Token/Password'
 
 
   view: null

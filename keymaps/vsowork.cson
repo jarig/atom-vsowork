@@ -1,2 +1,5 @@
-'atom-workspace':
-  'cmd-shift-j': 'vsowork:search'
+'.platform-darwin':
+  'cmd-shift-v': 'vsowork:search'
+
+'.platform-win32, .platform-linux':
+  'ctrl-shift-v': 'vsowork:search'

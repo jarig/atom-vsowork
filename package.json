@@ -6,6 +6,7 @@
   "keywords": [],
   "repository": "https://github.com/jarig/atom-vsowork",
   "license": "MIT",
+  "private": true,
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
