@@ -9,6 +9,7 @@ module.exports = class VsoWorkViewSelectListView extends SelectListView
   initialize: ->
     super
     @maxItems = 10
+    @lastRunQueryPath = null
     @executeVSOQuery()
 
   viewForItem: (item) ->
@@ -54,6 +55,9 @@ module.exports = class VsoWorkViewSelectListView extends SelectListView
     @vsoQueryPath = atom.config.get("vsowork.vsoQueryPath")
     @vsoUsername = atom.config.get("vsowork.vsoUsername")
     @vsoToken = atom.config.get("vsowork.vsoToken")
+    if @lastRunQueryPath isnt @vsoQueryPath
+      @vsoQueryId = null
+    @lastRunQueryPath = @vsoQueryPath
     if @vsoQueryId
       @getVSOItems @vsoQueryId
     else
