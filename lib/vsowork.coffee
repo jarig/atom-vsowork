@@ -24,6 +24,10 @@ module.exports =
       type: 'string'
       default: ''
       description: 'VSO Token/Password'
+    maxItems:
+      type: 'int'
+      default: 30
+      description: 'How many items to show maximum'
 
 
   view: null

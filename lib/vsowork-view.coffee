@@ -8,7 +8,6 @@ atom.themes.requireStylesheet(require.resolve('../styles/vsowork.less'))
 module.exports = class VsoWorkViewSelectListView extends SelectListView
   initialize: ->
     super
-    @maxItems = 10
     @lastRunQueryPath = null
     @executeVSOQuery()
 
@@ -55,6 +54,7 @@ module.exports = class VsoWorkViewSelectListView extends SelectListView
     @vsoQueryPath = atom.config.get("vsowork.vsoQueryPath")
     @vsoUsername = atom.config.get("vsowork.vsoUsername")
     @vsoToken = atom.config.get("vsowork.vsoToken")
+    @maxItems = atom.config.get("vsowork.maxItems")
     if @lastRunQueryPath isnt @vsoQueryPath
       @vsoQueryId = null
     @lastRunQueryPath = @vsoQueryPath
